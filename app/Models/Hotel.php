@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 
 class Hotel extends Model
 {
+    protected $table = 'hotels';
     protected $casts = [
         'services' => 'array',
         'images' => 'array'
