@@ -19,6 +19,7 @@ class DestinoController extends Controller
         $destino = new Destinos();
         $destino->name = $request->name;
         $destino->state = $request->state;
+        $destino->description = $request->description;
         $destino->save();
         return response()->json($destino);
     }
