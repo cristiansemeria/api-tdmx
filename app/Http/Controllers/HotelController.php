@@ -22,6 +22,7 @@ class HotelController extends Controller
         $hotel->description = $request->description;
         $hotel->services = $request->services;
         $hotel->destino_id = $request->destino_id;
+        $hotel->price = $request->price;
         $hotel->save();
         return response()->json($hotel);
     }
@@ -48,6 +49,7 @@ class HotelController extends Controller
             $hotel->description = $request->description;
             $hotel->services = $request->services;
             $hotel->images = $request->images;
+            $hotel->destino_id = $request->destino_id;
             $hotel->price = $request->price;
             $hotel->save();
             return response()->json($hotel);
