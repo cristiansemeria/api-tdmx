@@ -34,4 +34,9 @@ class Hotel extends Model
             $hotel->slug = Str::slug($hotel->name);
         });
     }
+
+    public function teams()
+    {
+        return $this->belongsToMany(Team::class, 'hotel_team');
+    }
 }

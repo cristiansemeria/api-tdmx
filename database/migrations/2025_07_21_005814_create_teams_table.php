@@ -14,11 +14,10 @@ return new class extends Migration
         Schema::create('teams', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('position');
-            $table->string('bio');
+            $table->string('role');
+            $table->text('bio');
             $table->string('image_url')->nullable();
-            $table->json('aptitudes')->nullable();
-            //Array de los id's de los hoteles de la tabla "hotels"
+            $table->json('talents')->nullable();
             $table->timestamps();
         });
     }
