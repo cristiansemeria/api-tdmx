@@ -1,0 +1,88 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Tour;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
+
+class TourController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $tours = Tour::get();
+        return response()->json($tours);
+
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $tour = new Tour();
+        $tour->name = $request->name;
+        $tour->address = $request->address;
+        $tour->description = $request->description;
+        $tour->services = $request->services;
+        $tour->destino_id = $request->destino_id;
+        $tour->price = $request->price;
+        $tour->save();
+
+        return response()->json($tour);
+
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        try {
+            $tour = Tour::findOrFail($id);
+            return response()->json($tour);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'El tour seleccionado no existe'
+            ], 404);
+        }
+
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        try {
+            $tour = Tour::findOrFail($id);
+            $tour->name = $request->name;
+            $tour->address = $request->address;
+            $tour->description = $request->description;
+            $tour->services = $request->services;
+            $tour->images = $request->images;
+            $tour->destino_id = $request->destino_id;
+            $tour->price = $request->price;
+            $tour->save();
+
+            return response()->json($tour);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'El tour seleccionado no existe'
+            ], 404);
+        }
+
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        Tour::destroy($id);
+        return response()->json(['message' => 'El tour seleccionado no existe']);
+    }
+}

@@ -1,0 +1,165 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Hotel;
+use App\Models\Team;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
+
+class TeamController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $teams = Team::get();
+        return response()->json($teams);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        try {
+            // Validación recomendada
+            $request->validate([
+                'name' => 'required|string',
+                'role' => 'required|string',
+                'bio' => 'required|string',
+                'image_url' => 'nullable|string',
+                'talents' => 'nullable|array',
+                'hotel_ids' => 'nullable|array',
+                'tour_ids' => 'nullable|array',
+                'hotel_ids.*' => 'exists:hotels,id',
+                'tour_ids.*' => 'exists:tours,id',
+            ]);
+
+            $team = Team::create([
+                'name' => $request->name,
+                'role' => $request->role,
+                'bio' => $request->bio,
+                'image_url' => $request->image_url,
+                'talents' => $request->talents,
+            ]);
+
+            if ($request->filled('hotel_ids')) {
+                $team->hotels()->attach($request->hotel_ids);
+            }
+
+            if ($request->filled('tour_ids')) {
+                $team->tours()->attach($request->tour_ids);
+            }
+
+            return response()->json([
+                'team' => $team,
+                'hotel_ids' => $team->hotels->pluck('id'),
+                'tour_ids' => $team->tours->pluck('id'),
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error al guardar el equipo',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        try {
+            // Carga el team con la relación 'hotels'
+            $team = Team::with('hotels')->findOrFail($id);
+
+            return response()->json([
+                'name' => $team->name,
+                'role' => $team->role,
+                'bio' => $team->bio,
+                'image_url' => $team->image_url,
+                'talents' => $team->talents,
+                'hotel_ids' => $team->hotels->pluck('id'),
+                'tour_ids' => $team->tours->pluck('id'),
+                'hotels' => $team->hotels,
+            ]);
+
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'El miembro no existe.'
+            ], 404);
+        }
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        try {
+            // Validación (opcional pero recomendada)
+            $request->validate([
+                'name' => 'required|string',
+                'role' => 'required|string',
+                'bio' => 'required|string',
+                'image_url' => 'nullable|string',
+                'talents' => 'nullable|array',
+                'hotel_ids' => 'nullable|array',
+                'tour_ids' => 'nullable|array',
+                'hotel_ids.*' => 'exists:hotels,id',
+                'tour_ids.*' => 'exists:tours,id',
+            ]);
+
+            // Encuentra el team o lanza 404
+            $team = Team::findOrFail($id);
+
+            // Actualiza campos
+            $team->update([
+                'name' => $request->name,
+                'role' => $request->role,
+                'bio' => $request->bio,
+                'image_url' => $request->image_url,
+                'talents' => $request->talents,
+            ]);
+
+            // Sincroniza hoteles si vienen en la petición
+            if ($request->filled('hotel_ids')) {
+                $team->hotels()->sync($request->hotel_ids);
+            }
+
+            if ($request->filled('tour_ids')) {
+                $team->tours()->sync($request->tour_ids);
+            }
+
+            // Respuesta con los hoteles actualizados
+            return response()->json([
+                'team' => $team->load('hotels'), // ← carga hoteles directamente
+                'hotel_ids' => $team->hotels->pluck('id'),
+                'tour_ids' => $team->tours->pluck('id')
+            ]);
+
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'El miembro no existe.'
+            ], 404);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error al actualizar el equipo',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        Team::destroy($id);
+        return response()->json('El miembro ha sido eliminado.');
+    }
+}
