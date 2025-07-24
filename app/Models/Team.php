@@ -12,6 +12,7 @@ class Team extends Model
         'bio',
         'image_url',
         'talents',
+        'order',
     ];
     protected $casts = [
         'talents' => 'array',

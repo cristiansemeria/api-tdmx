@@ -14,8 +14,24 @@ class TeamController extends Controller
      */
     public function index()
     {
-        $teams = Team::get();
-        return response()->json($teams);
+        $teams = Team::with(['hotels', 'tours'])->get();
+        $formatted = $teams->map(function ($team) {
+            return [
+                'id' => $team->id,
+                'order' => $team->order,
+                'name' => $team->name,
+                'role' => $team->role,
+                'bio' => $team->bio,
+                'image_url' => $team->image_url,
+                'talents' => $team->talents,
+                'hotel_ids' => $team->hotels->pluck('id'),
+                'tour_ids' => $team->tours->pluck('id'),
+                'hotels' => $team->hotels,
+                'tours' => $team->tours,
+            ];
+        });
+
+        return response()->json($formatted);
     }
 
     /**
@@ -27,6 +43,7 @@ class TeamController extends Controller
             // Validación recomendada
             $request->validate([
                 'name' => 'required|string',
+                'order' => 'required|integer',
                 'role' => 'required|string',
                 'bio' => 'required|string',
                 'image_url' => 'nullable|string',
@@ -39,6 +56,7 @@ class TeamController extends Controller
 
             $team = Team::create([
                 'name' => $request->name,
+                'order' => $request->order,
                 'role' => $request->role,
                 'bio' => $request->bio,
                 'image_url' => $request->image_url,
@@ -80,11 +98,11 @@ class TeamController extends Controller
                 'name' => $team->name,
                 'role' => $team->role,
                 'bio' => $team->bio,
+                'order' => $team->order,
                 'image_url' => $team->image_url,
                 'talents' => $team->talents,
                 'hotel_ids' => $team->hotels->pluck('id'),
                 'tour_ids' => $team->tours->pluck('id'),
-                'hotels' => $team->hotels,
             ]);
 
         } catch (ModelNotFoundException $e) {
@@ -103,6 +121,7 @@ class TeamController extends Controller
             // Validación (opcional pero recomendada)
             $request->validate([
                 'name' => 'required|string',
+                'order' => 'required|integer|unique:teams,order,' . $id,
                 'role' => 'required|string',
                 'bio' => 'required|string',
                 'image_url' => 'nullable|string',
@@ -111,6 +130,8 @@ class TeamController extends Controller
                 'tour_ids' => 'nullable|array',
                 'hotel_ids.*' => 'exists:hotels,id',
                 'tour_ids.*' => 'exists:tours,id',
+            ], [
+                'order.unique' => 'El numero de orden ya existe, por favor elija otro.',
             ]);
 
             // Encuentra el team o lanza 404
@@ -119,6 +140,7 @@ class TeamController extends Controller
             // Actualiza campos
             $team->update([
                 'name' => $request->name,
+                'order' => $request->order,
                 'role' => $request->role,
                 'bio' => $request->bio,
                 'image_url' => $request->image_url,
