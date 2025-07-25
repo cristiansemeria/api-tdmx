@@ -10,7 +10,8 @@ class Hotel extends Model
     protected $table = 'hotels';
     protected $casts = [
         'services' => 'array',
-        'images' => 'array'
+        'images' => 'array',
+        'google_maps' => 'array'
     ];
 
     protected $fillable = [

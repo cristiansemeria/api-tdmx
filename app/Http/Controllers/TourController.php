@@ -85,4 +85,9 @@ class TourController extends Controller
         Tour::destroy($id);
         return response()->json(['message' => 'El tour seleccionado no existe']);
     }
+
+    public function getTourBySlug(string $slug) {
+        $tour = Tour::where('slug', $slug)->firstOrFail();
+        return response()->json($tour);
+    }
 }

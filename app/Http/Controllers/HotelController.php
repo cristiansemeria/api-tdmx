@@ -51,6 +51,7 @@ class HotelController extends Controller
             $hotel->images = $request->images;
             $hotel->destino_id = $request->destino_id;
             $hotel->price = $request->price;
+            $hotel->google_maps = $request->google_maps;
             $hotel->save();
             return response()->json($hotel);
         } catch (ModelNotFoundException $e) {
@@ -64,5 +65,10 @@ class HotelController extends Controller
     {
         Hotel::destroy($id);
         return response()->json(['message' => 'Deleted']);
+    }
+
+    public function getHotelBySlug(string $slug) {
+        $hotel = Hotel::where('slug', $slug)->firstOrFail();
+        return response()->json($hotel);
     }
 }
