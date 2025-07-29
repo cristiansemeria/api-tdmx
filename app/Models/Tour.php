@@ -10,7 +10,8 @@ class Tour extends Model
     protected $table = 'tours';
     protected $casts = [
         'services' => 'array',
-        'images' => 'array'
+        'images' => 'array',
+        'google_maps' => 'array'
     ];
 
     protected $fillable = [

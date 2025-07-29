@@ -66,6 +66,7 @@ class TourController extends Controller
             $tour->images = $request->images;
             $tour->destino_id = $request->destino_id;
             $tour->price = $request->price;
+            $tour->google_maps = $request->google_maps;
             $tour->save();
 
             return response()->json($tour);
@@ -87,7 +88,9 @@ class TourController extends Controller
     }
 
     public function getTourBySlug(string $slug) {
-        $tour = Tour::where('slug', $slug)->firstOrFail();
+        $tour = Tour::where('slug', $slug)
+            ->with('teams')
+            ->firstOrFail();
         return response()->json($tour);
     }
 }

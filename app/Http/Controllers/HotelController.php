@@ -68,7 +68,9 @@ class HotelController extends Controller
     }
 
     public function getHotelBySlug(string $slug) {
-        $hotel = Hotel::where('slug', $slug)->firstOrFail();
+        $hotel = Hotel::where('slug', $slug)
+            ->with('teams')
+            ->firstOrFail();
         return response()->json($hotel);
     }
 }
