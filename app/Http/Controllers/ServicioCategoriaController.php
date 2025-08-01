@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ServiciosCategoria;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 class ServicioCategoriaController extends Controller
@@ -33,7 +34,15 @@ class ServicioCategoriaController extends Controller
      */
     public function show(string $id)
     {
-        //
+        try {
+            $categoria = ServiciosCategoria::findOrFail($id);
+            return response()->json($categoria);
+
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'La categoria seleccionado no existe'
+            ], 404);
+        }
     }
 
     /**
@@ -41,7 +50,17 @@ class ServicioCategoriaController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        try {
+            $categoria = ServiciosCategoria::findOrFail($id);
+            $categoria->name = $request->name;
+            $categoria->icon = $request->icon;
+            $categoria->save();
+            return response()->json($categoria);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'La categoria seleccionado no existe'
+            ], 404);
+        }
     }
 
     /**

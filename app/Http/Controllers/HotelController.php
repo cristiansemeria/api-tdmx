@@ -52,6 +52,7 @@ class HotelController extends Controller
             $hotel->destino_id = $request->destino_id;
             $hotel->price = $request->price;
             $hotel->google_maps = $request->google_maps;
+            $hotel->reviews = $request->reviews;
             $hotel->save();
             return response()->json($hotel);
         } catch (ModelNotFoundException $e) {
