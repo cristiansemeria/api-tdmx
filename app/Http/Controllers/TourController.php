@@ -67,6 +67,7 @@ class TourController extends Controller
             $tour->destino_id = $request->destino_id;
             $tour->price = $request->price;
             $tour->google_maps = $request->google_maps;
+            $tour->reviews = $request->reviews;
             $tour->save();
 
             return response()->json($tour);
