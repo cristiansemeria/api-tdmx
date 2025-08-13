@@ -5,13 +5,18 @@ namespace App\Http\Controllers;
 use App\Models\Hotel;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class HotelController extends Controller
 {
     public function index()
     {
-        $hoteles = Hotel::get();
-        return response()->json($hoteles);
+        try {
+            $hoteles = Hotel::get();
+            return response()->json($hoteles);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => 'Hotel not found'], 404);
+        }
     }
 
     public function store(Request $request)
@@ -22,6 +27,7 @@ class HotelController extends Controller
         $hotel->description = $request->description;
         $hotel->services = $request->services;
         $hotel->destino_id = $request->destino_id;
+        $hotel->google_maps = $request->google_maps;
         $hotel->price = $request->price;
         $hotel->save();
         return response()->json($hotel);

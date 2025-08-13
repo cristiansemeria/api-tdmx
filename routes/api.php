@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\DestinoController;
 use App\Http\Controllers\HotelController;
 use App\Http\Controllers\ServicioCategoriaController;
@@ -14,10 +15,12 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::apiResource('destinos', DestinoController::class);
-Route::apiResource('hotel', HotelController::class);
-Route::get('/hotel/slug/{slug}', [HotelController::class, 'getHotelBySlug']);
+Route::apiResource('hotel', HotelController::class)->middleware(['auth:sanctum', 'ability']);
+Route::get('/hotel/slug/{slug}', [HotelController::class, 'getHotelBySlug'])->middleware(['auth:sanctum', 'ability']);
 Route::apiResource('tour', TourController::class);
 Route::get('/tour/slug/{slug}', [TourController::class, 'getTourBySlug']);
 Route::apiResource('categoria', ServicioCategoriaController::class);
 Route::apiResource('subcategoria', ServicioSubcategoriaController::class);
 Route::apiResource('team', TeamController::class);
+
+Route::post('/register', [UserController::class, 'register']);
