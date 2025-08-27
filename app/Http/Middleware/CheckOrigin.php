@@ -19,6 +19,7 @@ class CheckOrigin
         $allowedOrigins = [
             'http://tudestinomexico.test',
             'https://tudestinomx.com',
+            'https://test.tudestinomx.com',
             // agrega más URLs que quieras permitir
         ];
 
