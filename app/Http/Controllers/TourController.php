@@ -30,6 +30,7 @@ class TourController extends Controller
         $tour->services = $request->services;
         $tour->destino_id = $request->destino_id;
         $tour->price = $request->price;
+        $tour->active = $request->active;
         $tour->save();
 
         return response()->json($tour);
@@ -67,6 +68,7 @@ class TourController extends Controller
             $tour->destino_id = $request->destino_id;
             $tour->price = $request->price;
             $tour->google_maps = $request->google_maps;
+            $tour->active = $request->active;
             $tour->reviews = $request->reviews;
             $tour->save();
 
